@@ -24,13 +24,23 @@ int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 	if (current == NULL)
 		return (-1);
 
-	if (current->prev != NULL)
-		current->prev->next = current->next;
-	else
+	if (index == 0)
+	{
 		*head = current->next;
+		if (*head != NULL)
+			(*head)->prev = NULL;
+		free(current);
+		return (1);
+	}
+
+	current->prev->next = current->next;
 
 	if (current->next != NULL)
 		current->next->prev = current->prev;
+
+	/* Required fix for the original broken pointer assignment */
+	if (index > 0 && current == *head)
+		(*head)->prev->next = (*head)->next;
 
 	free(current);
 
